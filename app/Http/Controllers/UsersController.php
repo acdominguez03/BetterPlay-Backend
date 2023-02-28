@@ -182,4 +182,53 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
         }
     }
+
+    //BET-75
+    public function edit(Request $request){
+        $json = $request->getContent();
+        $data = json_decode($json);
+        
+        if($data){
+            $validate = Validator::make(json_decode($json, true),[
+                'username' => 'string|unique:users',
+                'password' => 'string|min:6',
+                'photo' => 'nullable'
+            ]);
+    
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
+            }
+            $user = auth()->user();
+            $user->username = $data->username;
+            $user->password = Hash::make($data->password);
+            $image = str_replace('data:image/png;base64,', '', $data->photo);
+            $image = str_replace(' ', '+', $image);
+            $imageName =$user->username.'.'.'png';
+            \File::put(storage_path(). '/' . $imageName, base64_decode($image));
+            $ruta = storage_path(). '/' . $imageName;
+            $user->photo = $ruta;
+            try{
+                $user->save();
+                return ResponseGenerator::generateResponse("OK", 200, $ruta , ["Datos Actualizados correctamente"]);
+            }catch(\Exception $e){
+                return ResponseGenerator::generateResponse("KO", 404, null, ["No se han podido actualizar los datos"]);
+            } 
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
+        }
+    }
+
+    public function getCurrentUserPhoto(){
+        try{
+            $user = auth()->user();
+            if($user->photo != null){
+                $image = base64_encode(file_get_contents(storage_path(). '/' . $user->username . '.' . 'png'));
+                return ResponseGenerator::generateResponse("OK", 200, $image, "Usuario obtenido correctamente");
+            }else{
+                return ResponseGenerator::generateResponse("OK", 200, null, "Usuario obtenido correctamente");
+            }
+        }catch(\Exception $e){
+            return ResponseGenerator::generateResponse("KO", 304, null, "Error al buscar");
+        }
+    }
 }
