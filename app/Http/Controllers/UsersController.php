@@ -105,7 +105,7 @@ class UsersController extends Controller
                     Mail::to($data->email)->send(new CodeMail($code));
                     return ResponseGenerator::generateResponse("OK", 200, null, ["Email enviado"]);
                 }catch(\Exception $e){
-                    return ResponseGenerator::generateResponse("KO", 405,null, ["Error al guardar el código del usuario"]);
+                    return ResponseGenerator::generateResponse("KO", 405,$e, ["Error al guardar el código del usuario"]);
                 }
             }else{
                 return ResponseGenerator::generateResponse("KO", 404, null, ["Usuario con ese correo no encontrado"]);
