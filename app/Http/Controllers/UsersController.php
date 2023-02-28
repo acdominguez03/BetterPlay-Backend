@@ -322,4 +322,37 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, "Datos incorrectos");
         }
     }
+
+    public function checkDatesDiff($initDate, $finishDate){
+        $date1= new DateTime($initDate);
+        $date2= new DateTime($finishDate);
+        $diff = $date1->diff($date2);
+        return $diff->days;
+    }
+
+    //BET-121
+    public function getUserById(Request $request){
+        $json = $request->getContent();
+    
+        $data = json_decode($json);
+    
+        if($data){
+            $validate = Validator::make(json_decode($json,true), [
+                'id' => 'required|exists:users,id'
+            ]);
+    
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
+            }else {
+                try{
+                    $user = User::find($data->id);
+                    return ResponseGenerator::generateResponse("OK", 200, $user, "Usuario obtenido correctamente");
+                }catch(\Exception $e){
+                    return ResponseGenerator::generateResponse("KO", 304, null, "Error al buscar");
+                }
+            }
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, "Datos no registrados");
+        }
+    }
 }
