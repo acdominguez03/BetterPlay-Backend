@@ -231,4 +231,95 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 304, null, "Error al buscar");
         }
     }
+
+    //BET-133
+    public function updateStreak(Request $request){
+        $json = $request->getContent();
+        $data = json_decode($json);
+    
+        if($data){
+            $validate = Validator::make(json_decode($json,true), [
+                'date' => 'required|integer'
+            ]);
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
+            }else{
+                $user = auth()->user();
+                $streak = 0;
+                $requestDate = date('Y-m-d H:i:s', $request->date);
+    
+                if($user->streakStartDate == null){
+                    $user->streakStartDate = $requestDate;
+                    $user->streakEndDate = $requestDate;
+                    $user->coins += 500; 
+    
+                    try {
+                        $user->save();
+                        $streak = 1;
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 1");
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                    }
+    
+                }else if($this->checkDatesDiff($user->streakEndDate, $requestDate) < 1){
+                    return ResponseGenerator::generateResponse("OK", 200, null, "No hay aumento de racha");
+                }else if($this->checkDatesDiff($user->streakEndDate, $requestDate) > 1){
+                    $user->streakStartDate = $requestDate;
+                    $user->streakEndDate = $requestDate;
+                    $user->coins += 500; 
+    
+                    try {
+                        $user->save();
+                        $streak = 0;
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Fin de la racha, racha actualizada a 1");
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                    }
+    
+                }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) == 1){
+                    $user->streakEndDate = $requestDate;
+                    $user->coins += 1000; 
+                    try {
+                        $user->save();
+                        $streak = 2;
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 2");
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                    }
+                }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) == 2){
+                    $user->streakEndDate = $requestDate;
+                    $user->coins += 1500;
+                    try {
+                        $user->save();
+                        $streak = 3;
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 3");
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                    }
+                }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) == 3){
+                    $user->streakEndDate = $requestDate;
+                    $user->coins += 2000;
+                    try {
+                        $user->save();
+                        $streak = 4;
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 4");
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                    }
+                }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) >= 4){
+                    $user->streakEndDate = $requestDate;
+                    $user->coins += 2500;
+                    try {
+                        $user->save();
+                        $streak = 5;
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha máxima");
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                    }
+                }
+            }
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, "Datos incorrectos");
+        }
+    }
 }
