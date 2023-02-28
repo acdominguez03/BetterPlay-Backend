@@ -342,7 +342,7 @@ class UsersController extends Controller
             ]);
     
             if($validate->fails()){
-                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
             }else {
                 try{
                     $user = User::find($data->id);
