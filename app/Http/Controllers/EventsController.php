@@ -80,4 +80,42 @@ class EventsController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, "Datos no Registrados");
         }
     }
+
+    //BET-153
+    public function participateInBet(Request $request) {
+        $json = $request->getContent();
+
+        $data = json_decode($json);
+
+        if($data){
+            $validate = Validator::make(json_decode($json,true), [
+                'eventId' => 'required|integer|exists:events,id',
+                'userId' => 'required|integer|exists:users,id',
+                'money' => 'required|integer',
+                'winner' => 'required|in:home,tie,away'
+            ]);
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("OK", 422, null, $validate->errors()->all());
+            }else{
+                $event = Event::find($data->eventId);
+
+                if(!empty($event)){
+                    try{
+                        $event->users()->attach($data->userId, ['money' => $data->money, 'winner'=>$data->winner]);
+                        $user = User::find($data->userId);
+                        $user->coins -= $data->money;
+                        $user->save();
+                        return ResponseGenerator::generateResponse("OK", 200, null, ["Participación creada"]);
+                    }catch(\Exception $e){
+                        $event->users()->detach($data->userId);
+                        return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la participación"]);
+                    }
+                }else{
+                    return ResponseGenerator::generateResponse("KO", 422, null, ["Evento con esa id no encontrada"]);
+                }
+            }
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no introducidos"]);
+        }
+    }
 }
