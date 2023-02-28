@@ -14,6 +14,43 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    //BET-30
+    public function login(Request $request){
+
+        $json = $request->getContent();
+    
+        $data = json_decode($json);
+    
+        if($data){
+    
+            //validar datos
+            $validate = Validator::make(json_decode($json,true), [
+               'username' => 'required',
+               'password' => 'required|min:6'
+            ]);
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
+            }else{
+                try{
+                    $user = User::where('username', 'like', $data->username)->firstOrFail();
+    
+                    if(!Hash::check($data->password, $user->password)) {
+                        return ResponseGenerator::generateResponse("KO", 404, null, ["Login incorrecto, comprueba la contraseña"]);
+                    }else{
+                        $user->tokens()->delete();
+    
+                        $token = $user->createToken($user->username);
+                        return ResponseGenerator::generateResponse("OK", 200, $token->plainTextToken, ["Login correcto"]);
+                    }
+                }catch(\Exception $e){
+                    return ResponseGenerator::generateResponse("KO", 404, null, ["Login incorrecto, usuario erróneo"]);
+                }
+            }
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
+        }
+    }
+
     //BET-22
     public function register(Request $request){
         $json = $request->getContent();
