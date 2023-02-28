@@ -56,4 +56,28 @@ class EventsController extends Controller
             return ResponseGenerator::generateResponse("KO", 404, null, "No se pueden devolver eventos");
         }
     }
+
+    public function getEventById(Request $request){
+        $json = $request->getContent();
+        $data = json_decode($json);
+    
+        if($data){
+            $validate = Validator::make(json_decode($json,true), [
+                'id' => 'required|exists:events,id'
+            ]);
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
+            }else{
+                try{
+                    $event = Event::with(['homeTeam','awayTeam'])->where('id','=',$data->id)->get();
+                    return ResponseGenerator::generateResponse("OK", 200, $event, "Evento encontrado correctamente");
+                }catch(\Exception $e){
+                    return ResponseGenerator::generateResponse("KO", 304, $e, "Error al buscar Evento");
+                }
+            }
+    
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, "Datos no Registrados");
+        }
+    }
 }
