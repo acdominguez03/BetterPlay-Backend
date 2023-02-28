@@ -86,4 +86,34 @@ class UserController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
+
+    //BET-43
+    public function sendMail(Request $request){
+        $json = $request->getContent();
+    
+        $data = json_decode($json);
+    
+        if($data){
+            $user = User::where('email', '=', $data->email)->first();
+    
+            if(!empty($user)){
+                $code = random_int(100000, 999999);
+                $user->code = "{$code}";
+    
+                try{
+                    $user->save();
+                    Mail::to($data->email)->send(new CodeMail($code));
+                    return ResponseGenerator::generateResponse("OK", 200, null, ["Email enviado"]);
+                }catch(\Exception $e){
+                    return ResponseGenerator::generateResponse("KO", 405,null, ["Error al guardar el código del usuario"]);
+                }
+            }else{
+                return ResponseGenerator::generateResponse("KO", 404, null, ["Usuario con ese correo no encontrado"]);
+            } 
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
+        }
+    }
+    
+    
 }
