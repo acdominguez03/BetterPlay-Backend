@@ -355,4 +355,14 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, "Datos no registrados");
         }
     }
+
+    //BET-115
+    public function list(){
+        try{
+            $users = User::all();
+            return ResponseGenerator::generateResponse("OK", 200, $users, "Usuarios obtenidos correctamente");
+        }catch(\Exception $e){
+            return ResponseGenerator::generateResponse("KO", 304, null, "Error al obtener Usuarios");
+        }
+    }
 }
