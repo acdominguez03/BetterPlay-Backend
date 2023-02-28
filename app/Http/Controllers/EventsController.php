@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class EventsController extends Controller
 {
-    //BET-147
+    //BET-160
     public function create(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);
@@ -43,6 +43,17 @@ class EventsController extends Controller
     
         }else{
             return ResponseGenerator::generateResponse("KO", 500, null, "Datos no Registrados");
+        }
+    }
+
+    //BET-74
+    public function list(){
+        $events = Event::with(['homeTeam','awayTeam'])->get();
+        
+        if($events){
+            return ResponseGenerator::generateResponse("OK", 200, $events, "Todos los eventos");
+        }else{
+            return ResponseGenerator::generateResponse("KO", 404, null, "No se pueden devolver eventos");
         }
     }
 }
