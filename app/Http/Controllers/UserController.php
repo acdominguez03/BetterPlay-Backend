@@ -151,5 +151,35 @@ class UserController extends Controller
         }
     }
     
+    public function changePassword(Request $request){
+        $json = $request->getContent();
     
+        $data = json_decode($json);
+    
+        if($data){
+            $validate = Validator::make(json_decode($json,true), [
+                'id' => 'required|integer',
+                'password' => 'required|string|min:6'
+            ]);
+    
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
+            }else{
+                $user = User::find($data->id);
+                if($user){
+                    $user->password = Hash::make($data->password);
+                    try{
+                        $user->save();
+                        return ResponseGenerator::generateResponse("OK", 200, null, ["Contraseña cambiada"]);
+                    }catch(\Exception $e){
+                        return ResponseGenerator::generateResponse("OK", 303, null, ["Error al cambiar la contraseña"]);
+                    }
+                }else{
+                    return ResponseGenerator::generateResponse("KO", 404, null, ["Usuario no encontrado"]);
+                }
+            }
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
+        }
+    }
 }
