@@ -6,6 +6,17 @@ use Illuminate\Http\Request;
 
 class NotificationsController extends Controller
 {
+    public function getNotificationsByUser(){
+        $user = auth()->user();
+
+        try{
+            $notifications = Notification::where('user_id', '=', $user->id)->get();
+            return ResponseGenerator::generateResponse("OK", 200, $notifications, "Notificaciones obtenidas");
+        }catch(\Exception $e){
+            return ResponseGenerator::generateResponse("KO", 500, $e, "Error al obtener los datos");
+        }
+    }
+    
     public function create(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);
