@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\ResponseGenerator;
+use App\Models\Event;
+use App\Models\Team;
+use Illuminate\Support\Facades\Validator;
 
 class EventsController extends Controller
 {
@@ -19,6 +23,7 @@ class EventsController extends Controller
                 'away_odd' => 'required|numeric',
                 'tie_odd' => 'required|numeric',
                 'date' => 'required|numeric',
+                'finalDate' => 'required|numeric'
             ]);
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
@@ -31,6 +36,7 @@ class EventsController extends Controller
                 $event->away_odd = $data->away_odd;
                 $event->tie_odd = $data->tie_odd;
                 $event->date = $data->date;
+                $event->finalDate = $data->finalDate;
                 $event->sport = $data->sport;
     
                 try{
