@@ -115,5 +115,41 @@ class UserController extends Controller
         }
     }
     
+    public function checkCorrectSecretCode(Request $request){
+        $json = $request->getContent();
+    
+        $data = json_decode($json);
+    
+        if($data){
+            $validate = Validator::make(json_decode($json,true), [
+                'id' => 'required|integer',
+                'code' => 'required|string|min:6|max:6'
+            ]);
+    
+            if($validate->fails()){
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
+            }else{
+                $user = User::find($data->id);
+                if($user){
+                    if($user->code == $data->code){
+                        $user->code = null;
+                        try{
+                            $user->save();
+                            return ResponseGenerator::generateResponse("OK", 200, null, ["Código correcto"]);
+                        }catch(\Exception $e){
+                            return ResponseGenerator::generateResponse("OK", 303, null, ["Error al borrar el código secreto"]);
+                        }
+                    }else{
+                        return ResponseGenerator::generateResponse("KO", 400, null, ["Código erróneo"]);
+                    }
+                }else{
+                    return ResponseGenerator::generateResponse("KO", 404, null, ["Usuario no encontrado"]);
+                }
+            }
+        }else{
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
+        }
+    }
+    
     
 }
