@@ -13,13 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('users');
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('username')->unique();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->text('password');
+            $table->integer('coins');
+            $table->integer('followers');
+            $table->text('code')->nullable();
+            $table->text('photo')->nullable();
+            $table->timestamp('streakStartDate')->nullable();
+            $table->timestamp('streakEndDate')->nullable();
             $table->timestamps();
         });
     }
