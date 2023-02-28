@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class UserController extends Controller
+class UsersController extends Controller
 {
     //BET-30
     public function login(Request $request){
