@@ -16,7 +16,7 @@ class EventsController extends Controller
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = array(
                 'home_id' => 'required|exists:teams,id',
                 'away_id' => 'required|exists:teams,id',
                 'home_odd' => 'required|numeric',
@@ -24,7 +24,26 @@ class EventsController extends Controller
                 'tie_odd' => 'required|numeric',
                 'date' => 'required|numeric',
                 'finalDate' => 'required|numeric'
-            ]);
+            );
+        
+            $customMessages = array(
+                'home_id.required' => 'El id del equipo local es necesario',
+                'home_id.exists:teams,id' => 'El id del equipo local debe existir en la tabla de equipos',
+                'away_id.required' => 'El id del equipo visitante es necesario',
+                'away_id.exists:teams,id' => 'El id del equipo visitante debe existir en la tabla de equipos',
+                'home_odd.required' => 'La cuota del equipo local es necesaria',
+                'home_odd.numeric' => 'La cuota del equipo local tiene que ser un número',
+                'away_odd.required' => 'La cuota del equipo visitante es necesaria',
+                'away_odd.numeric' => 'La cuota del equipo visitante tiene que ser un número',
+                'tie_odd.required' => 'La cuota del empate es necesaria',
+                'tie_odd.numeric' => 'La cuota del empate tiene que ser un número',
+                'date.required' => 'La fecha del evento es necesaria',
+                'date.numeric' => 'La fecha del evento tiene que ser un número',
+                'finalDate.required' => 'La fecha del fin del evento es necesaria',
+                'finalDate.numeric' => 'La fecha del fin del evento tiene que ser un número',
+                
+            );
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
             }else{

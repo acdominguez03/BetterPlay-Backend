@@ -18,16 +18,23 @@ class UsersController extends Controller
     public function login(Request $request){
 
         $json = $request->getContent();
-    
         $data = json_decode($json);
     
         if($data){
+            $rules = array(
+                'username' => 'required|string',
+                'password' => 'required|string|min:6'
+            );
+        
+            $customMessages = array(
+                'username.required' => 'El nombre de Usuario es necesario',
+                'password.required' => 'La contraseña es necesaria',
+                'password.string' => 'La contraseña tiene que ser un string',
+                'password.min:6' => 'La contraseña una longitud mínima de 6'
+            );
     
             //validar datos
-            $validate = Validator::make(json_decode($json,true), [
-               'username' => 'required',
-               'password' => 'required|min:6'
-            ]);
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
             }else{
@@ -40,7 +47,7 @@ class UsersController extends Controller
                         $user->tokens()->delete();
     
                         $token = $user->createToken($user->username);
-                        return ResponseGenerator::generateResponse("OK", 200, $token->plainTextToken, ["Login correcto"]);
+                        return ResponseGenerator::generateResponse("OK", 200, [$token->plainTextToken, $user], ["Login correcto"]);
                     }
                 }catch(\Exception $e){
                     return ResponseGenerator::generateResponse("KO", 404, null, ["Login incorrecto, usuario erróneo"]);
@@ -54,15 +61,28 @@ class UsersController extends Controller
     //BET-22
     public function register(Request $request){
         $json = $request->getContent();
-    
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = array(
                 'username' => 'required|string|unique:users,username',
                 'email' => 'required|string|email|unique:users,email',
                 'password' => 'required|string|min:6'
-            ]);
+            );
+        
+            $customMessages = array(
+                'username.required' => 'El nombre de Usuario es necesario',
+                'username.string' => 'El nombre de Usuario tiene que ser un string',
+                'username.unique:users,username' => 'El nombre de Usuario tiene que ser único en la tabla de Usuarios',
+                'email.required' => 'El email del Usuario es necesario',
+                'email.string' => 'El email tiene que ser un string',
+                'email.email' => 'El email tiene que cumplir el formato email',
+                'email.unique:users,email' => 'El email debe ser único en la tabala de Usuarios',
+                'password.required' => 'La contraseña es necesaria',
+                'password.string' => 'La contraseña tiene que ser un string',
+                'password.min:6' => 'La contraseña una longitud mínima de 6'
+            );
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
     
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
@@ -90,7 +110,6 @@ class UsersController extends Controller
     //BET-43
     public function sendMail(Request $request){
         $json = $request->getContent();
-    
         $data = json_decode($json);
     
         if($data){
@@ -117,7 +136,6 @@ class UsersController extends Controller
     
     public function checkCorrectSecretCode(Request $request){
         $json = $request->getContent();
-    
         $data = json_decode($json);
     
         if($data){
@@ -163,7 +181,6 @@ class UsersController extends Controller
     
     public function changePassword(Request $request){
         $json = $request->getContent();
-    
         $data = json_decode($json);
     
         if($data){
@@ -208,11 +225,21 @@ class UsersController extends Controller
         $data = json_decode($json);
         
         if($data){
-            $validate = Validator::make(json_decode($json, true),[
-                'username' => 'string|unique:users',
-                'password' => 'string|min:6',
-                'photo' => 'nullable'
-            ]);
+            $rules = array(
+                'username' => 'required|string|unique:users,username',
+                'email' => 'required|string|email|unique:users,email',
+                'photo' => 'nullable|string'
+            );
+        
+            $customMessages = array(
+                'username.required' => 'El nombre de Usuario es necesario',
+                'username.string' => 'El nombre de Usuario tiene que ser un string',
+                'username.unique:users,username' => 'El nombre de Usuario tiene que ser único en la tabla de Usuarios',
+                'password.required' => 'La contraseña es necesaria',
+                'password.string' => 'La contraseña tiene que ser un string',
+                'password.min:6' => 'La contraseña una longitud mínima de 6'
+            );
+            $validate = Validator::make(json_decode($json, true),$rules, $customMessages);
     
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
@@ -241,13 +268,13 @@ class UsersController extends Controller
         try{
             $user = auth()->user();
             if($user->photo != null){
-                $image = base64_encode(file_get_contents(storage_path(). '/' . $user->username . '.' . 'png'));
-                return ResponseGenerator::generateResponse("OK", 200, $image, "Usuario obtenido correctamente");
+                $image = base64_encode(file_get_contents(storage_path(). '/' . $user->username . '.' . 'jpeg'));
+                return ResponseGenerator::generateResponse("OK", 200, $image, ["Usuario obtenido correctamente"]);
             }else{
-                return ResponseGenerator::generateResponse("OK", 200, null, "Usuario obtenido correctamente");
+                return ResponseGenerator::generateResponse("OK", 200, null, ["Usuario obtenido correctamente"]);
             }
         }catch(\Exception $e){
-            return ResponseGenerator::generateResponse("KO", 304, null, "Error al buscar");
+            return ResponseGenerator::generateResponse("KO", 304, null, ["Error al buscar"]);
         }
     }
 
@@ -257,9 +284,16 @@ class UsersController extends Controller
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
-                'date' => 'required|integer'
-            ]);
+            $rules = array(
+                'date' => 'required|integer',
+                'password' => 'required|string|min:6'
+            );
+        
+            $customMessages = array(
+                'date.required' => 'La fecha es necesaria',
+                'date.integer' => 'La fecha debe ser un Integer'
+            );
+            $validate = Validator::make(json_decode($json,true),$rules, $customMessages);
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
             }else{
@@ -275,13 +309,13 @@ class UsersController extends Controller
                     try {
                         $user->save();
                         $streak = 1;
-                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 1");
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, ["Racha actualizada a 1"]);
                     }catch(\Exception $e){
-                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                        return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la fecha de inicio de racha"]);
                     }
     
                 }else if($this->checkDatesDiff($user->streakEndDate, $requestDate) < 1){
-                    return ResponseGenerator::generateResponse("OK", 200, null, "No hay aumento de racha");
+                    return ResponseGenerator::generateResponse("OK", 200, null, ["No hay aumento de racha"]);
                 }else if($this->checkDatesDiff($user->streakEndDate, $requestDate) > 1){
                     $user->streakStartDate = $requestDate;
                     $user->streakEndDate = $requestDate;
@@ -290,9 +324,9 @@ class UsersController extends Controller
                     try {
                         $user->save();
                         $streak = 0;
-                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Fin de la racha, racha actualizada a 1");
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, ["Fin de la racha, racha actualizada a 1"]);
                     }catch(\Exception $e){
-                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                        return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la fecha de inicio de racha"]);
                     }
     
                 }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) == 1){
@@ -301,9 +335,9 @@ class UsersController extends Controller
                     try {
                         $user->save();
                         $streak = 2;
-                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 2");
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, ["Racha actualizada a 2"]);
                     }catch(\Exception $e){
-                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                        return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la fecha de inicio de racha"]);
                     }
                 }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) == 2){
                     $user->streakEndDate = $requestDate;
@@ -311,9 +345,9 @@ class UsersController extends Controller
                     try {
                         $user->save();
                         $streak = 3;
-                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 3");
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, ["Racha actualizada a 3"]);
                     }catch(\Exception $e){
-                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                        return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la fecha de inicio de racha"]);
                     }
                 }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) == 3){
                     $user->streakEndDate = $requestDate;
@@ -321,9 +355,9 @@ class UsersController extends Controller
                     try {
                         $user->save();
                         $streak = 4;
-                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha actualizada a 4");
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, ["Racha actualizada a 4"]);
                     }catch(\Exception $e){
-                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                        return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la fecha de inicio de racha"]);
                     }
                 }else if($this->checkDatesDiff($user->streakStartDate, $requestDate) >= 4){
                     $user->streakEndDate = $requestDate;
@@ -331,14 +365,14 @@ class UsersController extends Controller
                     try {
                         $user->save();
                         $streak = 5;
-                        return ResponseGenerator::generateResponse("OK", 200, $streak, "Racha máxima");
+                        return ResponseGenerator::generateResponse("OK", 200, $streak, ["Racha máxima"]);
                     }catch(\Exception $e){
-                        return ResponseGenerator::generateResponse("KO", 405, $e, "Error al guardar la fecha de inicio de racha");
+                        return ResponseGenerator::generateResponse("KO", 405, $e,["Error al guardar la fecha de inicio de racha"]);
                     }
                 }
             }
         }else{
-            return ResponseGenerator::generateResponse("KO", 500, null, "Datos incorrectos");
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
         }
     }
 
@@ -356,22 +390,28 @@ class UsersController extends Controller
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = array(
                 'id' => 'required|exists:users,id'
-            ]);
+            );
+        
+            $customMessages = array(
+                'id.required' => 'El id de Usuario es necesario',
+                'id.exists:users,id' => 'Debe existir un usuario con ese Id'
+            );
+            $validate = Validator::make(json_decode($json,true),$rules, $customMessages);
     
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
             }else {
                 try{
                     $user = User::find($data->id);
-                    return ResponseGenerator::generateResponse("OK", 200, $user, "Usuario obtenido correctamente");
+                    return ResponseGenerator::generateResponse("OK", 200, $user, ["Usuario obtenido correctamente"]);
                 }catch(\Exception $e){
-                    return ResponseGenerator::generateResponse("KO", 304, null, "Error al buscar");
+                    return ResponseGenerator::generateResponse("KO", 304, null, ["Error al buscar"]);
                 }
             }
         }else{
-            return ResponseGenerator::generateResponse("KO", 500, null, "Datos no registrados");
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
 
@@ -379,9 +419,9 @@ class UsersController extends Controller
     public function list(){
         try{
             $users = User::all();
-            return ResponseGenerator::generateResponse("OK", 200, $users, "Usuarios obtenidos correctamente");
+            return ResponseGenerator::generateResponse("OK", 200, $users, ["Usuarios obtenidos correctamente"]);
         }catch(\Exception $e){
-            return ResponseGenerator::generateResponse("KO", 304, null, "Error al obtener Usuarios");
+            return ResponseGenerator::generateResponse("KO", 304, null, ["Error al obtener Usuarios"]);
         }
     }
 }
