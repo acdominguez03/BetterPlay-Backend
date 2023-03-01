@@ -41,7 +41,6 @@ class EventsController extends Controller
                 'date.numeric' => 'La fecha del evento tiene que ser un número',
                 'finalDate.required' => 'La fecha del fin del evento es necesaria',
                 'finalDate.numeric' => 'La fecha del fin del evento tiene que ser un número',
-                
             );
             $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
             if($validate->fails()){
@@ -60,14 +59,14 @@ class EventsController extends Controller
     
                 try{
                     $event->save();
-                    return ResponseGenerator::generateResponse("OK", 200, $event, "Evento creado correctamente");
+                    return ResponseGenerator::generateResponse("OK", 200, $event, ["Evento creado correctamente"]);
                 }catch(\Exception $e){
-                    return ResponseGenerator::generateResponse("KO", 304, $e, "Error al crear Evento");
+                    return ResponseGenerator::generateResponse("KO", 304, $e, ["Error al crear Evento"]);
                 }
             }
     
         }else{
-            return ResponseGenerator::generateResponse("KO", 500, null, "Datos no Registrados");
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no Registrados"]);
         }
     }
 
@@ -76,9 +75,9 @@ class EventsController extends Controller
         $events = Event::with(['homeTeam','awayTeam'])->get();
         
         if($events){
-            return ResponseGenerator::generateResponse("OK", 200, $events, "Todos los eventos");
+            return ResponseGenerator::generateResponse("OK", 200, $events, ["Todos los eventos"]);
         }else{
-            return ResponseGenerator::generateResponse("KO", 404, null, "No se pueden devolver eventos");
+            return ResponseGenerator::generateResponse("KO", 404, null, ["No se pueden devolver eventos"]);
         }
     }
 
@@ -87,22 +86,28 @@ class EventsController extends Controller
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = array(
                 'id' => 'required|exists:events,id'
-            ]);
+            );
+        
+            $customMessages = array(
+                'id.required' => 'El id del evento es necesario',
+                'id.exists:events,id' => 'El id del evento debe existir en la tabla de eventos',
+            );
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
             }else{
                 try{
                     $event = Event::with(['homeTeam','awayTeam'])->where('id','=',$data->id)->get();
-                    return ResponseGenerator::generateResponse("OK", 200, $event, "Evento encontrado correctamente");
+                    return ResponseGenerator::generateResponse("OK", 200, $event, ["Evento encontrado correctamente"]);
                 }catch(\Exception $e){
-                    return ResponseGenerator::generateResponse("KO", 304, $e, "Error al buscar Evento");
+                    return ResponseGenerator::generateResponse("KO", 304, $e, ["Error al buscar Evento"]);
                 }
             }
     
         }else{
-            return ResponseGenerator::generateResponse("KO", 500, null, "Datos no Registrados");
+            return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no Registrados"]);
         }
     }
 }
