@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Http\Helpers;
 
 class ResponseGenerator {
 
