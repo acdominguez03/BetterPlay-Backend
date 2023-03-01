@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Helpers\ResponseGenerator;
+use App\Http\Helpers\ResponseGenerator;
 use App\Models\Team;
 use Illuminate\Support\Facades\Validator;
 
