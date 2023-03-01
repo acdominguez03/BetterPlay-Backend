@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Http\Helpers;
 class ResponseGenerator {
 
     //Response Generator
