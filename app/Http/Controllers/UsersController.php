@@ -103,7 +103,7 @@ class UsersController extends Controller
                 try{
                     $user->save();
                     Mail::to($data->email)->send(new CodeMail($code));
-                    return ResponseGenerator::generateResponse("OK", 200, null, ["Email enviado"]);
+                    return ResponseGenerator::generateResponse("OK", 200, $user->id,  ["Email enviado"]);
                 }catch(\Exception $e){
                     return ResponseGenerator::generateResponse("KO", 405,null, ["Error al guardar el código del usuario"]);
                 }
@@ -121,11 +121,21 @@ class UsersController extends Controller
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = array(
                 'id' => 'required|integer',
                 'code' => 'required|string|min:6|max:6'
-            ]);
-    
+            );
+        
+            $customMessages = array(
+                'id.required' => 'La id del usuario es necesaria',
+                'code.required' => 'Necesitamos saber el código de recuperación',
+                'code.string' => 'El código tiene que ser un string',
+                'code.min:6' => 'El código tiene una longitud mínima de 6',
+                'code.max:6' => 'El código tiene una longitud máxima de 6'
+            );
+
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
+
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
             }else{
@@ -157,11 +167,20 @@ class UsersController extends Controller
         $data = json_decode($json);
     
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = [
                 'id' => 'required|integer',
                 'password' => 'required|string|min:6'
-            ]);
-    
+            ];
+        
+            $customMessages = [
+                'id.required' => 'La id del usuario es necesaria',
+                'password.required' => 'Necesitamos saber la nueva contraseña',
+                'password.string' => 'La contraseña tiene que ser un string',
+                'password.min:6' => 'La contraseña tiene una longitud mínima de 6'
+            ];
+
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
+            
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
             }else{
