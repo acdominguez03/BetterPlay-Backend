@@ -220,9 +220,9 @@ class UsersController extends Controller
             $user = auth()->user();
             $user->username = $data->username;
             $user->password = Hash::make($data->password);
-            $image = str_replace('data:image/png;base64,', '', $data->photo);
+            $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
             $image = str_replace(' ', '+', $image);
-            $imageName =$user->username.'.'.'png';
+            $imageName =$user->username.'.'.'jpeg';
             \File::put(storage_path(). '/' . $imageName, base64_decode($image));
             $ruta = storage_path(). '/' . $imageName;
             $user->photo = $ruta;
