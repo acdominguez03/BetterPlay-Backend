@@ -7,6 +7,7 @@ use App\Http\Helpers\ResponseGenerator;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CodeMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -230,5 +231,70 @@ class UsersController extends Controller
         }catch(\Exception $e){
             return ResponseGenerator::generateResponse("KO", 304, null, "Error al buscar");
         }
+    }
+
+    public function getUserData(){
+        $user = auth()->user();
+
+        $allParticipations = DB::table('event_user')
+        ->join('events', 'event_user.event_id', '=', 'events.id')
+        ->where('user_id', '=', $user->id)
+        ->select('event_user.*', 'events.sport')
+        ->get();
+
+        $streak = DB::table('event_user')
+        ->join('events', 'event_user.event_id', '=', 'events.id')
+        ->where('user_id', '=', $user->id)
+        ->orderBy('event_user.id', 'desc')->take(5)
+        ->select('event_user.result')
+        ->get();
+
+        $finalStats = [
+            'soccerVictory' => [],
+            'basketballVictory' => [],
+            'tennisVictory' => [],
+            'soccer' => [],
+            'basketball' => [],
+            'tennis' => [],
+        ];
+
+        $percentage = [
+            'soccer' => 0,
+            'basketball' => 0,
+            'tennis' => 0
+        ];
+
+        foreach($allParticipations as $stat) {
+            if($stat->sport == "soccer" && $stat->result == 'victory'){
+                array_push($finalStats['soccerVictory'], $stat);               
+            }
+            if($stat->sport == "basketball" && $stat->result == 'victory'){
+                array_push($finalStats['basketballVictory'], $stat);               
+            }
+            if($stat->sport == "tennis" && $stat->result == 'victory'){
+                array_push($finalStats['tennisVictory'], $stat);               
+            }
+            if($stat->sport == "soccer"){
+                array_push($finalStats['soccer'], $stat);               
+            }
+            if($stat->sport == "basketball"){
+                array_push($finalStats['basketball'], $stat);               
+            }
+            if($stat->sport == "tennis"){
+                array_push($finalStats['tennis'], $stat);               
+            }
+        }
+
+        if(count($finalStats['soccerVictory']) > 0 && count($finalStats['soccer']) > 0){
+            $percentage['soccer'] = count($finalStats['soccerVictory']) / count($finalStats['soccer']);
+        }
+        if(count($finalStats['basketballVictory']) > 0 && count($finalStats['basketball']) > 0){
+            $percentage['basketball'] = count($finalStats['basketballVictory']) / count($finalStats['basketball']);
+        }
+        if(count($finalStats['tennisVictory']) > 0 && count($finalStats['tennis']) > 0){
+            $percentage['tennis'] = count($finalStats['tennisVictory']) / count($finalStats['tennis']);
+        }
+
+        return ResponseGenerator::generateResponse("OK", 200, [$percentage, $streak], "Usuario obtenido");
     }
 }
