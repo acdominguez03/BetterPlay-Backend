@@ -34,6 +34,7 @@ Route::prefix('/users')->group(function(){
     Route::middleware('auth:sanctum')->get('/getCurrentUserPhoto', [UsersController::class, 'getCurrentUserPhoto']);
     Route::middleware('auth:sanctum')->post('/updateStreak', [UsersController::class, 'updateStreak']);
     Route::middleware('auth:sanctum')->get('/list', [UsersController::class, 'list']);
+    Route::middleware('auth:sanctum')->get('/getUserData', [UsersController::class, 'getUserData']);
 });
 
 Route::prefix('/events')->group(function(){
