@@ -88,30 +88,69 @@ class EventsController extends Controller
         $data = json_decode($json);
 
         if($data){
-            $validate = Validator::make(json_decode($json,true), [
+            $rules = array(
                 'eventId' => 'required|integer|exists:events,id',
-                'userId' => 'required|integer|exists:users,id',
-                'money' => 'required|integer',
-                'winner' => 'required|in:home,tie,away'
-            ]);
+                'coins' => 'required|integer',
+                'team_selected' => 'required|integer|exists:teams,id'
+            );
+        
+            $customMessages = array(
+                'eventId.required' => 'La id del evento es necesaria',
+                'eventId.integer' => 'La id del evento debe ser numérica',
+                'eventId.exists:events,id' => 'La id del evento debe existir en la tabla de eventos',
+                'coins.required' => 'Es necesario saber el número de monedas a apostar',
+                'coins.integer' => 'Es necesario que las monedas sean numéricas',
+                'team_selected.required' => 'Es necesario elegir un equipo ganador',
+                'team_selected.exists:teams,id' => 'El equipo seleccionado debe existir en la tabla de equipos',
+                'team_selected.integer' => 'El equipo seleccionado debe ser numérico'
+            );
+            $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
+
             if($validate->fails()){
                 return ResponseGenerator::generateResponse("OK", 422, null, $validate->errors()->all());
             }else{
-                $event = Event::find($data->eventId);
+                
+                //Obtener el usuario a través del token
+                $user = auth()->user();
 
-                if(!empty($event)){
+                $event = Event::with(['homeTeam','awayTeam'])->where('id','=',$data->eventId)->get();
+                $newEvent = json_encode($event);
+                $newEvent = json_decode($event);
+
+                
+                $participations = DB::table('event_user')
+                ->where('event_id','=', $event[0]->id)
+                ->where('user_id', '=', $user->id)
+                ->get();
+
+                if(empty($event)){
+                    return ResponseGenerator::generateResponse("KO", 422, null, ["Evento con esa id no encontrado"]);
+                }else if(!count($participations) == 0){
+                    return ResponseGenerator::generateResponse("KO", 422, null , ["Ya has participado en esta apuesta"]);
+                }else if($user->coins < $data->coins){
+                    return ResponseGenerator::generateResponse("KO", 422, null, ["No tienes las monedas suficientes para participar"]);
+                }else{
                     try{
-                        $event->users()->attach($data->userId, ['money' => $data->money, 'winner'=>$data->winner]);
-                        $user = User::find($data->userId);
-                        $user->coins -= $data->money;
+                        //Disminuir las monedas del usuario y crear la participación
+                        $user->coins -= $data->coins;
+                        $event[0]->users()->attach($user->id, ['coins' => $data->coins, 'team_selected'=>$data->team_selected]);
                         $user->save();
-                        return ResponseGenerator::generateResponse("OK", 200, null, ["Participación creada"]);
+
+                        //Una vez creada la participación y guardado el usuario se crea la notificación
+                        try {
+                            $notification = new Notification();
+                            $notification->text = "Has participado en el ". $newEvent[0]->home_team->name . " vs " . $newEvent[0]->away_team->name;
+                            $notification->type = "participation";
+                            $notification->user_id = $user->id;
+                            $notification->save();
+                            return ResponseGenerator::generateResponse("OK", 200, null, ["Participación creada"]);
+                        }catch(\Exception $e){
+                            return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al crear la notificación"]);
+                        }
+                        
                     }catch(\Exception $e){
-                        $event->users()->detach($data->userId);
                         return ResponseGenerator::generateResponse("KO", 405, $e, ["Error al guardar la participación"]);
                     }
-                }else{
-                    return ResponseGenerator::generateResponse("KO", 422, null, ["Evento con esa id no encontrada"]);
                 }
             }
         }else{
