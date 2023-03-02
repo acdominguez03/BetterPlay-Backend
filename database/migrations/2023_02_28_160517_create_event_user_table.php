@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('team_selected');
             $table->foreign('team_selected')->references('id')->on('teams');
             $table->integer('coins');
-            $table->enum('result', ['victory', 'lose']);
+            $table->enum('result', ['victory', 'lose'])->nullable();
             $table->timestamps();
         });
     }
