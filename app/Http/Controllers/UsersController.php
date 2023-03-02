@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CodeMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -250,13 +251,21 @@ class UsersController extends Controller
             $user->password = Hash::make($data->password);
             $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
             $image = str_replace(' ', '+', $image);
-            $imageName =$user->username.'.'.'jpeg';
-            \File::put(storage_path(). '/' . $imageName, base64_decode($image));
-            $ruta = storage_path(). '/' . $imageName;
-            $user->photo = $ruta;
+            $temp_file = tempnam(sys_get_temp_dir(), 'img');
+            file_put_contents($temp_file, base64_decode($image));
+            $file = new UploadedFile($temp_file,$data->username.'.jpeg', null, null, true);
+            // $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
+            // $image = str_replace(' ', '+', $image);
+            // $imageName =$user->username.'.'.'jpeg';
+            // \File::put(storage_path(). '/' . $imageName, base64_decode($image));
+            // $ruta = storage_path(). '/' . $imageName;
+            if($user->photo != ''){
+                Storage::delete($user->photo);
+            }
+            $user->photo = $file->store('public/images');
             try{
                 $user->save();
-                return ResponseGenerator::generateResponse("OK", 200, $ruta , ["Datos Actualizados correctamente"]);
+                return ResponseGenerator::generateResponse("OK", 200, $user->photo , ["Datos Actualizados correctamente"]);
             }catch(\Exception $e){
                 return ResponseGenerator::generateResponse("KO", 404, null, ["No se han podido actualizar los datos"]);
             } 
