@@ -20,8 +20,8 @@ return new class extends Migration
             $table->foreign('home_id')->references('id')->on('teams');
             $table->unsignedBigInteger('away_id');
             $table->foreign('away_id')->references('id')->on('teams');
-            $table->integer('home_result')->nullable()->default('0');
-            $table->integer('away_result')->nullable()->default('0');
+            $table->integer('home_result')->nullable();
+            $table->integer('away_result')->nullable();
             $table->float('home_odd');
             $table->float('away_odd');
             $table->float('tie_odd');
