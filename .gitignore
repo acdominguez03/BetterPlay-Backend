@@ -1,5 +1,4 @@
 /node_modules
-/public/hot
 /vendor
 .env.backup
 .phpunit.result.cache
@@ -10,12 +9,5 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
-/public/css
-/public/js
-/public/mix-manifest.json
 # But not these files...
-!/public/assets/*
-/public/assets/js
-/public/assets/css
-/public/assets/vendor
 composer.lock
