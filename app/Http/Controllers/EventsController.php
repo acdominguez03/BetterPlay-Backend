@@ -121,7 +121,7 @@ class EventsController extends Controller
             $rules = array(
                 'eventId' => 'required|integer|exists:events,id',
                 'coins' => 'required|integer',
-                'team_selected' => 'required|integer|exists:teams,id'
+                'team_selected' => 'required|in:1,X,2'
             );
         
             $customMessages = array(
@@ -131,8 +131,7 @@ class EventsController extends Controller
                 'coins.required' => 'Es necesario saber el número de monedas a apostar',
                 'coins.integer' => 'Es necesario que las monedas sean numéricas',
                 'team_selected.required' => 'Es necesario elegir un equipo ganador',
-                'team_selected.exists:teams,id' => 'El equipo seleccionado debe existir en la tabla de equipos',
-                'team_selected.integer' => 'El equipo seleccionado debe ser numérico'
+                'team_selected.in:1,X,2'  => 'Es necesario que sea 1, X, o 2'
             );
             $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
 

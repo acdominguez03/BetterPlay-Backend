@@ -254,37 +254,25 @@ class UsersController extends Controller
             $temp_file = tempnam(sys_get_temp_dir(), 'img');
             file_put_contents($temp_file, base64_decode($image));
             $file = new UploadedFile($temp_file,$data->username.'.jpeg', null, null, true);
-            // $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
-            // $image = str_replace(' ', '+', $image);
-            // $imageName =$user->username.'.'.'jpeg';
-            // \File::put(storage_path(). '/' . $imageName, base64_decode($image));
-            // $ruta = storage_path(). '/' . $imageName;
+
             if($user->photo != ''){
-                Storage::delete($user->photo);
-            }
-            $user->photo = $file->store('public/images');
+                $savedUrl = str_replace(env('APP_URL'), '', $user->photo);
+                //return ResponseGenerator::generateResponse("OK", 200, $savedUrl , ["Datos Actualizados correctamente"]);
+                Storage::delete('/public/'.$savedUrl);
+            } 
+            $file->storeAs('public',$user->username.'.jpeg');
+            $url = Storage::url($user->username.'.jpeg');
+            $finalUrl = 'https://betterplay-backend-production.up.railway.app'.$url;
+           
+            $user->photo = $finalUrl;
             try{
                 $user->save();
-                return ResponseGenerator::generateResponse("OK", 200, $user->photo , ["Datos Actualizados correctamente"]);
+                return ResponseGenerator::generateResponse("OK", 200, $finalUrl , ["Datos Actualizados correctamente"]);
             }catch(\Exception $e){
                 return ResponseGenerator::generateResponse("KO", 404, null, ["No se han podido actualizar los datos"]);
             } 
         }else{
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
-        }
-    }
-
-    public function getCurrentUserPhoto(){
-        try{
-            $user = auth()->user();
-            if($user->photo != null){
-                $image = base64_encode(file_get_contents(storage_path(). '/' . $user->username . '.' . 'jpeg'));
-                return ResponseGenerator::generateResponse("OK", 200, $image, ["Usuario obtenido correctamente"]);
-            }else{
-                return ResponseGenerator::generateResponse("OK", 200, null, ["Usuario obtenido correctamente"]);
-            }
-        }catch(\Exception $e){
-            return ResponseGenerator::generateResponse("KO", 304, null, ["Error al buscar"]);
         }
     }
 
