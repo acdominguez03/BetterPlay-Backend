@@ -228,7 +228,7 @@ class UsersController extends Controller
         if($data){
             $rules = array(
                 'username' => 'required|string|unique:users,username',
-                'email' => 'required|string|email|unique:users,email',
+                'password' => 'required|string|min:6',
                 'photo' => 'nullable|string'
             );
         
