@@ -6,6 +6,7 @@ use App\Http\Controllers\TeamsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\FriendsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,4 +54,7 @@ Route::prefix('/notifications')->group(function(){
 Route::prefix('/teams')->group(function(){
     Route::put('/addBasket', [TeamsController::class, 'addBasketTeams']);
     Route::put('/addSoccer', [TeamsController::class, 'addSoccerTeams']);
+});
+Route::prefix('/friends')->group(function(){
+    Route::middleware('auth:sanctum')->put('/friendRequest', [FriendsController::class, 'friendRequest']);
 });
