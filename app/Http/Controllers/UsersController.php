@@ -201,15 +201,15 @@ class UsersController extends Controller
             $user = auth()->user();
             $user->username = $data->username;
             $user->password = Hash::make($data->password);
-            $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
-            $image = str_replace(' ', '+', $image);
-            $imageName =$user->username.'.'.'jpeg';
-            \File::put(storage_path(). '/' . $imageName, base64_decode($image));
-            $ruta = storage_path(). '/' . $imageName;
-            $user->photo = $ruta;
+            // $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
+            // $image = str_replace(' ', '+', $image);
+            // $imageName =$user->username.'.'.'jpeg';
+            // \File::put(storage_path(). '/' . $imageName, base64_decode($image));
+            // $ruta = storage_path(). '/' . $imageName;
+            $user->photo = $data->photo;
             try{
                 $user->save();
-                return ResponseGenerator::generateResponse("OK", 200, $ruta , ["Datos Actualizados correctamente"]);
+                return ResponseGenerator::generateResponse("OK", 200, null , ["Datos Actualizados correctamente"]);
             }catch(\Exception $e){
                 return ResponseGenerator::generateResponse("KO", 404, null, ["No se han podido actualizar los datos"]);
             } 
