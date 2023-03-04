@@ -249,25 +249,15 @@ class UsersController extends Controller
             $user = auth()->user();
             $user->username = $data->username;
             $user->password = Hash::make($data->password);
-            $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
-            $image = str_replace(' ', '+', $image);
-            $temp_file = tempnam(sys_get_temp_dir(), 'img');
-            file_put_contents($temp_file, base64_decode($image));
-            $file = new UploadedFile($temp_file,$data->username.'.jpeg', null, null, true);
-
-            if($user->photo != ''){
-                $savedUrl = str_replace(env('APP_URL'), '', $user->photo);
-                //return ResponseGenerator::generateResponse("OK", 200, $savedUrl , ["Datos Actualizados correctamente"]);
-                Storage::delete('/public/'.$savedUrl);
-            } 
-            $file->storeAs('public',$user->username.'.jpeg');
-            $url = Storage::url($user->username.'.jpeg');
-            $finalUrl = 'https://betterplay-backend-production.up.railway.app'.$url;
-           
-            $user->photo = $finalUrl;
+            // $image = str_replace('data:image/jpeg;base64,', '', $data->photo);
+            // $image = str_replace(' ', '+', $image);
+            // $imageName =$user->username.'.'.'jpeg';
+            // \File::put(storage_path(). '/' . $imageName, base64_decode($image));
+            // $ruta = storage_path(). '/' . $imageName;
+            $user->photo = $data->photo;
             try{
                 $user->save();
-                return ResponseGenerator::generateResponse("OK", 200, $finalUrl , ["Datos Actualizados correctamente"]);
+                return ResponseGenerator::generateResponse("OK", 200, null , ["Datos Actualizados correctamente"]);
             }catch(\Exception $e){
                 return ResponseGenerator::generateResponse("KO", 404, null, ["No se han podido actualizar los datos"]);
             } 
