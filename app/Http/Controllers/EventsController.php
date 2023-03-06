@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Helpers\ResponseGenerator;
 use App\Models\Event;
 use App\Models\Team;
+use App\Models\Notification;
+use App\Models\Participation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Jobs\CoinsDealer;
 
 class EventsController extends Controller
 {
@@ -44,7 +48,7 @@ class EventsController extends Controller
             );
             $validate = Validator::make(json_decode($json,true), $rules, $customMessages);
             if($validate->fails()){
-                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors());
+                return ResponseGenerator::generateResponse("KO", 422, null, $validate->errors()->all());
             }else{
                 $event = new Event();
     
@@ -121,7 +125,7 @@ class EventsController extends Controller
             $rules = array(
                 'eventId' => 'required|integer|exists:events,id',
                 'coins' => 'required|integer',
-                'team_selected' => 'required|integer|exists:teams,id'
+                'team_selected' => 'required|in:1,X,2'
             );
         
             $customMessages = array(
@@ -148,7 +152,7 @@ class EventsController extends Controller
                 $newEvent = json_decode($event);
 
                 
-                $participations = DB::table('event_user')
+                $participations = DB::table('participations')
                 ->where('event_id','=', $event[0]->id)
                 ->where('user_id', '=', $user->id)
                 ->get();
@@ -163,8 +167,14 @@ class EventsController extends Controller
                     try{
                         //Disminuir las monedas del usuario y crear la participación
                         $user->coins -= $data->coins;
-                        $event[0]->users()->attach($user->id, ['coins' => $data->coins, 'team_selected'=>$data->team_selected]);
                         $user->save();
+
+                        $newParticipation = new Participation();
+                        $newParticipation->user_id = $user->id;
+                        $newParticipation->event_id = $data->eventId;
+                        $newParticipation->coins = $data->coins;
+                        $newParticipation->team_selected = $data->team_selected;
+                        $newParticipation->save();
 
                         //Una vez creada la participación y guardado el usuario se crea la notificación
                         try {
@@ -185,6 +195,39 @@ class EventsController extends Controller
             }
         }else{
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no introducidos"]);
+        }
+    }
+
+    public function finishEvent(Request $request){
+        $json = $request->getContent();
+
+        $data = json_decode($json);
+
+        if($data) {
+            foreach($data->events as $event) {
+                $updateEvent = Event::find($event->eventId);
+
+                $updateEvent->home_result = $event->home_result;
+                $updateEvent->away_result = $event->away_result;
+
+                if($event->home_result > $event->away_result){
+                    $updateEvent->winner = '1';
+                }else if($event->home_result < $event->away_result){
+                    $updateEvent->winner = '2';
+                }else if($event->home_result == $event->away_result){
+                    $updateEvent->winner = 'X';
+                }
+
+                try {
+                    $updateEvent->save();
+                }catch(\Exception $e){
+                    return ResponseGenerator::generateResponse("KO", 422, null, ["Error al finalizar el evento"]);
+                }
+            }
+            
+            CoinsDealer::dispatch();
+            
+            return ResponseGenerator::generateResponse("OK", 200, null, ["Evento finalizado"]);
         }
     }
 }

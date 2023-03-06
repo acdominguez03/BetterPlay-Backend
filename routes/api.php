@@ -43,6 +43,7 @@ Route::prefix('/events')->group(function(){
     Route::middleware('auth:sanctum')->get('/list', [EventsController::class, 'list']);
     Route::delete('/delete', [EventsController::class, 'delete']);
     Route::middleware('auth:sanctum')->post('/participateInBet', [EventsController::class, 'participateInBet']);
+    Route::middleware('auth:sanctum')->post('/finishEvent', [EventsController::class, 'finishEvent']);
 
 });
 Route::prefix('/notifications')->group(function(){

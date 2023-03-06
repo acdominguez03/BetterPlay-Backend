@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreign('away_id')->references('id')->on('teams');
             $table->integer('home_result')->nullable();
             $table->integer('away_result')->nullable();
+            $table->enum('winner', ['1','X','2'])->nullable();
             $table->float('home_odd');
             $table->float('away_odd');
             $table->float('tie_odd');
