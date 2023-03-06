@@ -51,5 +51,13 @@ class PoolsController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
-
+    public function list(){
+        $currentDate = Carbon::now()->timestamp;
+        try{
+            $pools = Pool::where('finaldate', '>', $currentDate)->get();
+            return ResponseGenerator::generateResponse("OK", 200, $pools, ["Quinielas encontradas"]);
+        }catch(\Exception $e){
+            return ResponseGenerator::generateResponse("KO", 304, $e, ["Error al buscar"]);
+        }    
+    }
 }
