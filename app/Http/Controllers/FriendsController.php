@@ -32,7 +32,7 @@ class FriendsController extends Controller
             $userLoged = auth()->user();
             $friend = new Friend();
             $friend->request_id = $userLoged->id;
-            $otherUser->receive_id = $data->id;
+            $friend->receive_id = $data->id;
             try{
                 $friend->save();
                 return ResponseGenerator::generateResponse("OK", 200,  $friend , ["Petición de amistad realizada correctamente."]);
