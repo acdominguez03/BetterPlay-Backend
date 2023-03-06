@@ -1,0 +1,258 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Controlador de Usuarios",
+        "description": "Aquí está alojada toda la lógica de los usuarios",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/users/login": {
+            "post": {
+                "summary": "Logea un Usuario",
+                "description": "Recibe el nombre y la contraseña de un usuario, y le asigna un token",
+                "operationId": "079e21e1527db84e7c0d64a497665796",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Logeado Correctamente"
+                    },
+                    "304": {
+                        "description": "Error al guardar"
+                    }
+                }
+            }
+        },
+        "/api/users/register": {
+            "put": {
+                "summary": "Registra un Usuario",
+                "description": "Recibe el nombre, el correo y la contraseña y añade un usuario a la tabla de usuarios",
+                "operationId": "a9322fc4fac0a2eecd6697724458d128",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Creado Correctamente"
+                    },
+                    "304": {
+                        "description": "Error al guardar"
+                    }
+                }
+            }
+        },
+        "/api/users/sendEmail": {
+            "post": {
+                "operationId": "a1331d684210a8fdc0cd08a58f3fa6c2",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email enviado Correctamente"
+                    },
+                    "405": {
+                        "description": "Error al guardar el código del usuario"
+                    }
+                }
+            }
+        },
+        "/api/users/checkCorrectSecretCode": {
+            "post": {
+                "summary": "Comprueba el código secreto",
+                "description": "Recibe el código secreto",
+                "operationId": "de4f167c935a523e4e2153f19d0d7477",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código Correcto Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/users/changePassword": {
+            "post": {
+                "summary": "Cambia la contraseña",
+                "description": "Recibe la nueva contrseña y la actualiza en el usuario",
+                "operationId": "67839553c2ea54ccc41cce91865393e9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código Correcto Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/users/edit": {
+            "post": {
+                "summary": "Actualiza los datos del usuario",
+                "description": "Recibe un nombre de usuario, una contraseña y una foto y actualiza los datos del usuario",
+                "operationId": "76a7a4618cd763f49906a110fd50c225",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "photo": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualizado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/users/updateStreak": {
+            "post": {
+                "summary": "Actualiza la racha de inicio de sesión",
+                "description": "Recibe la fecha de logeo del usuario y comprueba los dias que han pasado desde la última vez que se conectó a la app y le asigna las monedas correspondientes",
+                "operationId": "7d97161dcf97c66e11974f8d685c4a35",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "date": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualizado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/users/getUserById": {
+            "get": {
+                "summary": "Busca a un usuario concreto",
+                "description": "Obtiene una id de un usuario y lo busca en la tabla de usuarios ",
+                "operationId": "07a308c7bf953eb3812b792ca8a02a64",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario Encontrado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/users/list": {
+            "get": {
+                "summary": "Devuelve todos los usuarios registrados",
+                "description": "Devuelve una lista con todos los usuarios de la aplicación",
+                "operationId": "88348f825c0045a166841d88de6a925b",
+                "responses": {
+                    "200": {
+                        "description": "Usuario Encontrado Correctamente"
+                    }
+                }
+            }
+        }
+    }
+}

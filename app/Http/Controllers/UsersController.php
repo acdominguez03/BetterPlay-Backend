@@ -14,8 +14,46 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @OA\Info(
+ *      version="1.0.0", 
+ *      title="Controlador de Usuarios",
+ *      description="Aquí está alojada toda la lógica de los usuarios",
+ * )
+ */
 class UsersController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/users/login",
+     *     summary="Logea un Usuario",
+     *     description="Recibe el nombre y la contraseña de un usuario, y le asigna un token",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="username",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="password",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logeado Correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response="304",
+     *         description="Error al guardar",
+     *     )
+     * )
+     */
     //BET-30
     public function login(Request $request){
 
@@ -59,7 +97,41 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
-
+    /**
+     * @OA\Put(
+     *     path="/api/users/register",
+     *     summary="Registra un Usuario",
+     *     description="Recibe el nombre, el correo y la contraseña y añade un usuario a la tabla de usuarios",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="username",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="email",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="password",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Creado Correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response="304",
+     *         description="Error al guardar",
+     *     )
+     * )
+     */
     //BET-22
     public function register(Request $request){
         $json = $request->getContent();
@@ -108,7 +180,31 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/users/sendEmail",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="email",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Email enviado Correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response="405",
+     *         description="Error al guardar el código del usuario",
+     *     )
+     * )
+     */
     //BET-43
     public function sendMail(Request $request){
         $json = $request->getContent();
@@ -135,7 +231,33 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
         }
     }
-    
+    /**
+     * @OA\Post(
+     *     path="/api/users/checkCorrectSecretCode",
+     *     summary="Comprueba el código secreto",
+     *     description="Recibe el código secreto",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="code",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Código Correcto Correctamente"
+     *     ),
+     * )
+     */
     public function checkCorrectSecretCode(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);
@@ -180,7 +302,33 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
         }
     }
-    
+    /**
+     * @OA\Post(
+     *     path="/api/users/changePassword",
+     *     summary="Cambia la contraseña",
+     *     description="Recibe la nueva contrseña y la actualiza en el usuario",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="password",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Código Correcto Correctamente"
+     *     ),
+     * )
+     */
     public function changePassword(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);
@@ -220,7 +368,37 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos incorrectos"]);
         }
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/users/edit",
+     *     summary="Actualiza los datos del usuario",
+     *     description="Recibe un nombre de usuario, una contraseña y una foto y actualiza los datos del usuario",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="username",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="password",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="photo",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Actualizado Correctamente"
+     *     ),
+     * )
+     */
     //BET-75
     public function edit(Request $request){
         $json = $request->getContent();
@@ -265,7 +443,29 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/users/updateStreak",
+     *     summary="Actualiza la racha de inicio de sesión",
+     *     description="Recibe la fecha de logeo del usuario y comprueba los dias que han pasado desde la última vez que se conectó a la app y le asigna las monedas correspondientes",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="date",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Actualizado Correctamente"
+     *     ),
+     * )
+     */
     //BET-133
     public function updateStreak(Request $request){
         $json = $request->getContent();
@@ -273,8 +473,7 @@ class UsersController extends Controller
     
         if($data){
             $rules = array(
-                'date' => 'required|integer',
-                'password' => 'required|string|min:6'
+                'date' => 'required|integer'
             );
         
             $customMessages = array(
@@ -371,6 +570,29 @@ class UsersController extends Controller
         return $diff->days;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/users/getUserById",
+     *     summary="Busca a un usuario concreto",
+     *     description="Obtiene una id de un usuario y lo busca en la tabla de usuarios ",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario Encontrado Correctamente"
+     *     ),
+     * )
+     */
     //BET-121
     public function getUserById(Request $request){
         $json = $request->getContent();
@@ -402,7 +624,17 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no registrados"]);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/users/list",
+     *     summary="Devuelve todos los usuarios registrados",
+     *     description="Devuelve una lista con todos los usuarios de la aplicación",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario Encontrado Correctamente"
+     *     ),
+     * )
+     */
     //BET-115
     public function list(){
         try{
