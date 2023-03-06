@@ -6,6 +6,7 @@ use App\Http\Controllers\TeamsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\PoolsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,4 +54,8 @@ Route::prefix('/notifications')->group(function(){
 Route::prefix('/teams')->group(function(){
     Route::put('/addBasket', [TeamsController::class, 'addBasketTeams']);
     Route::put('/addSoccer', [TeamsController::class, 'addSoccerTeams']);
+});
+Route::prefix('/pools')->group(function(){
+    Route::put('/create', [PoolsController::class, 'create']);
+    Route::get('/list', [PoolsController::class, 'list']);
 });
