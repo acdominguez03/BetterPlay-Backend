@@ -13,15 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('event_user');
-        Schema::create('event_user', function (Blueprint $table) {
+        Schema::dropIfExists('participations');
+        Schema::create('participations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained();
             $table->foreignId('user_id')->constrained();
-            $table->unsignedBigInteger('team_selected');
-            $table->foreign('team_selected')->references('id')->on('teams');
             $table->integer('coins');
+            $table->enum('team_selected', ['1','X','2'])->nullable();
             $table->enum('result', ['victory', 'lose'])->nullable();
+            $table->boolean('sent')->default(false);
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_user');
+        Schema::dropIfExists('participations');
     }
 };
