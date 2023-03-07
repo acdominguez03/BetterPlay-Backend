@@ -58,4 +58,6 @@ Route::prefix('/teams')->group(function(){
 Route::prefix('/pools')->group(function(){
     Route::put('/create', [PoolsController::class, 'create']);
     Route::get('/list', [PoolsController::class, 'list']);
+    Route::middleware('auth:sanctum')->post('/participateInPool', [PoolsController::class, 'participateInPool']);
+    Route::middleware('auth:sanctum')->post('/finishPool', [PoolsController::class, 'finishPool']);
 });
