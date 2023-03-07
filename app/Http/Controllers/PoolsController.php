@@ -6,11 +6,13 @@ use Illuminate\Http\Request;
 use App\Http\Helpers\ResponseGenerator;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Pool;
+use App\Models\User;
 use App\Models\PoolEvent;
 use App\Models\PoolParticipation;
 use App\Models\Notification;
 use App\Models\SpecialPoolEvent;
 use Carbon\Carbon;
+use App\Jobs\PoolCoinsDealer;
 use Illuminate\Support\Facades\DB;
 
 class PoolsController extends Controller
@@ -197,8 +199,13 @@ class PoolsController extends Controller
                 $events[$i]->save();
             }
 
+            $specialEvent[0]->home_result = $data->poolResults[14]->home_result;
+            $specialEvent[0]->away_result = $data->poolResults[14]->away_result;
+            $specialEvent[0]->save();
+
+            PoolCoinsDealer::dispatch();
+
             return ResponseGenerator::generateResponse("OK", 200, null, ["Quiniela finalizada"]);
         }
-
     }
 }
