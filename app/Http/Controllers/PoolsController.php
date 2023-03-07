@@ -9,7 +9,7 @@ use App\Models\Pool;
 use App\Models\PoolEvent;
 use App\Models\PoolParticipation;
 use App\Models\Notification;
-use App\Models\EspecialPoolEvent;
+use App\Models\SpecialPoolEvent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -67,7 +67,7 @@ class PoolsController extends Controller
                             return ResponseGenerator::generateResponse("KO", 304, $e, ["Error al guardar el evento"]);
                         }
                     }else{
-                        $newEspecialMatch = new EspecialPoolEvent();
+                        $newEspecialMatch = new SpecialPoolEvent();
                         $newEspecialMatch->home_id = $data->matches[$i]->homeId;
                         $newEspecialMatch->away_id = $data->matches[$i]->awayId;
                         $newEspecialMatch->date = $data->matches[$i]->date;
@@ -184,6 +184,21 @@ class PoolsController extends Controller
     }
 
     public function finishPool(Request $request){
+        $json = $request->getContent();
+        $data = json_decode($json);
+
+        if($data) {
+
+            $events = PoolEvent::where('pool_id', '=', $data->poolId)->get();
+            $specialEvent = SpecialPoolEvent::where('pool_id', '=', $data->poolId)->get();
+
+            for ($i = 0; $i < count($events); $i++) {
+                $events[$i]->result = $data->poolResults[$i]->result; 
+                $events[$i]->save();
+            }
+
+            return ResponseGenerator::generateResponse("OK", 200, null, ["Quiniela finalizada"]);
+        }
 
     }
 }

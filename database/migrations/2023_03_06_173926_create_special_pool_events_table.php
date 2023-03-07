@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('especial_pool_events');
-        Schema::create('especial_pool_events', function (Blueprint $table) {
+        Schema::dropIfExists('special_pool_events');
+        Schema::create('special_pool_events', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('home_id');
             $table->foreign('home_id')->references('id')->on('teams');
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('especial_pool_events');
+        Schema::dropIfExists('special_pool_events');
     }
 };
