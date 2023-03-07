@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\FriendsController;
+use App\Http\Controllers\PoolsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,4 +59,10 @@ Route::prefix('/teams')->group(function(){
 });
 Route::prefix('/friends')->group(function(){
     Route::middleware('auth:sanctum')->put('/friendRequest', [FriendsController::class, 'friendRequest']);
+});
+Route::prefix('/pools')->group(function(){
+    Route::put('/create', [PoolsController::class, 'create']);
+    Route::get('/list', [PoolsController::class, 'list']);
+    Route::middleware('auth:sanctum')->post('/participateInPool', [PoolsController::class, 'participateInPool']);
+    Route::middleware('auth:sanctum')->post('/finishPool', [PoolsController::class, 'finishPool']);
 });
