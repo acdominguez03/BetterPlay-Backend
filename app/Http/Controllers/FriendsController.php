@@ -11,6 +11,29 @@ use App\Http\Helpers\ResponseGenerator;
 
 class FriendsController extends Controller
 {
+    /**
+     * @OA\Put(
+     *     path="/api/friends/friendRequest",
+     *     summary="Crea una petición de amistad",
+     *     description="Recibe la id de otro user y le manda una petición de amistad",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Actualizado Correctamente"
+     *     ),
+     * )
+     */
     public function friendRequest(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);

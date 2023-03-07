@@ -6,6 +6,187 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/events/create": {
+            "put": {
+                "summary": "Crea un Evento",
+                "description": "Recibe home_id, away_id, home_odd, away_odd, tie_odd, date, finalDate y crea evento",
+                "operationId": "f0e8b6a154986ce59fc18586b3f0f899",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "home_id": {
+                                        "type": "integer"
+                                    },
+                                    "away_id": {
+                                        "type": "integer"
+                                    },
+                                    "home_odd": {
+                                        "type": "integer"
+                                    },
+                                    "away_odd": {
+                                        "type": "integer"
+                                    },
+                                    "tie_odd": {
+                                        "type": "integer"
+                                    },
+                                    "date": {
+                                        "type": "integer"
+                                    },
+                                    "finalDate": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evento Creado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/events/list": {
+            "get": {
+                "summary": "Devuelve todos los eventos creados",
+                "description": "Devuelve una lista con todos los eventos de la aplicación",
+                "operationId": "005f0bd95688867e7daa3be686bf7f72",
+                "responses": {
+                    "200": {
+                        "description": "Eventos encontrados Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/events/getEventById": {
+            "get": {
+                "summary": "Obtiene y devuelve un evento concreto",
+                "description": "Recibe la id de un evento, lo busca y lo devuelve",
+                "operationId": "66794e7eeb5abf9d9b42c3c4bb21edbd",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evento Encontrado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/events/participateInBet": {
+            "post": {
+                "summary": "El Usuario participa en una apuesta",
+                "description": "Recibe la id de un evento, la cantidad de monedas apostada y el equipo elegido y realiza la apuesta",
+                "operationId": "e1ed8f3120132856235a2efdb0c2d97c",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "eventId": {
+                                        "type": "integer"
+                                    },
+                                    "coins": {
+                                        "type": "integer"
+                                    },
+                                    "team_selected": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evento Encontrado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/friends/friendRequest": {
+            "put": {
+                "summary": "Crea una petición de amistad",
+                "description": "Recibe la id de otro user y le manda una petición de amistad",
+                "operationId": "21990fbabe7cec6efb6ef364f2f3376b",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualizado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/notifications/getNotificationsByUser": {
+            "get": {
+                "summary": "Obtiene las notificaciones del usuario",
+                "description": "Devuelve todas las notificaciones del usuario logeado",
+                "operationId": "2538bbc2b9f32dedda2be39131346e33",
+                "responses": {
+                    "200": {
+                        "description": "Evento Encontrado Correctamente"
+                    }
+                }
+            }
+        },
+        "/api/notifications/create": {
+            "put": {
+                "summary": "Crea una notificación",
+                "description": "Recibe un nombre de la notificción y el tipo y la crea",
+                "operationId": "88999a952fc8e8755ebce2329e0ac0a9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "text": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualizado Correctamente"
+                    }
+                }
+            }
+        },
         "/api/users/login": {
             "post": {
                 "summary": "Logea un Usuario",
@@ -252,6 +433,28 @@
                         "description": "Usuario Encontrado Correctamente"
                     }
                 }
+            }
+        },
+        "/api/users/getUserData": {
+            "get": {
+                "summary": "Devuelve todos los datos del usuario",
+                "description": "Devuelve ulos datos de un usuario junto con las apuestas que ha realizado",
+                "operationId": "030226762bfb2f589a1ac3b2c70c020f",
+                "responses": {
+                    "200": {
+                        "description": "Usuario Encontrado Correctamente"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
             }
         }
     }

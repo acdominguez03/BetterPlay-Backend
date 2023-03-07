@@ -9,6 +9,17 @@ use App\Http\Helpers\ResponseGenerator;
 
 class NotificationsController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/notifications/getNotificationsByUser",
+     *     summary="Obtiene las notificaciones del usuario",
+     *     description="Devuelve todas las notificaciones del usuario logeado",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Evento Encontrado Correctamente"
+     *     ),
+     * )
+     */
     public function getNotificationsByUser(){
         $user = auth()->user();
 
@@ -19,7 +30,33 @@ class NotificationsController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, $e, ["Error al obtener los datos"]);
         }
     }
-    
+    /**
+     * @OA\Put(
+     *     path="/api/notifications/create",
+     *     summary="Crea una notificación",
+     *     description="Recibe un nombre de la notificción y el tipo y la crea",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="text",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="type",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Actualizado Correctamente"
+     *     ),
+     * )
+     */
     public function create(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);

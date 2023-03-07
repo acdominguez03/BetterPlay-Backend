@@ -10,6 +10,53 @@ use Illuminate\Support\Facades\Validator;
 
 class EventsController extends Controller
 {
+    /**
+     * @OA\Put(
+     *     path="/api/events/create",
+     *     summary="Crea un Evento",
+     *     description="Recibe home_id, away_id, home_odd, away_odd, tie_odd, date, finalDate y crea evento",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="home_id",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="away_id",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="home_odd",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="away_odd",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="tie_odd",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="date",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="finalDate",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Evento Creado Correctamente"
+     *     ),
+     * )
+     */
     //BET-160
     public function create(Request $request){
         $json = $request->getContent();
@@ -69,7 +116,17 @@ class EventsController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no Registrados"]);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/events/list",
+     *     summary="Devuelve todos los eventos creados",
+     *     description="Devuelve una lista con todos los eventos de la aplicación",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Eventos encontrados Correctamente"
+     *     ),
+     * )
+     */
     //BET-74
     public function list(){
         $events = Event::with(['homeTeam','awayTeam'])->get();
@@ -80,7 +137,29 @@ class EventsController extends Controller
             return ResponseGenerator::generateResponse("KO", 404, null, ["No se pueden devolver eventos"]);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/events/getEventById",
+     *     summary="Obtiene y devuelve un evento concreto",
+     *     description="Recibe la id de un evento, lo busca y lo devuelve",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Evento Encontrado Correctamente"
+     *     ),
+     * )
+     */
     public function getEventById(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);
@@ -110,7 +189,37 @@ class EventsController extends Controller
             return ResponseGenerator::generateResponse("KO", 500, null, ["Datos no Registrados"]);
         }
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/events/participateInBet",
+     *     summary="El Usuario participa en una apuesta",
+     *     description="Recibe la id de un evento, la cantidad de monedas apostada y el equipo elegido y realiza la apuesta",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="eventId",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="coins",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="team_selected",
+     *                          type="string"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Evento Encontrado Correctamente"
+     *     ),
+     * )
+     */
     //BET-153
     public function participateInBet(Request $request) {
         $json = $request->getContent();

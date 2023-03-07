@@ -644,7 +644,17 @@ class UsersController extends Controller
             return ResponseGenerator::generateResponse("KO", 304, null, ["Error al obtener Usuarios"]);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/users/getUserData",
+     *     summary="Devuelve todos los datos del usuario",
+     *     description="Devuelve ulos datos de un usuario junto con las apuestas que ha realizado",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario Encontrado Correctamente"
+     *     ),
+     * )
+     */
     public function getUserData(){
         $user = auth()->user();
 
