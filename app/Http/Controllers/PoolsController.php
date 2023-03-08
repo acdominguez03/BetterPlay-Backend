@@ -15,8 +15,46 @@ use Carbon\Carbon;
 use App\Jobs\PoolCoinsDealer;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @OA\Info(
+ *      version="1.0.0", 
+ *      title="Controlador de Quinielas",
+ *      description="Aquí está alojada toda la lógica de las quinielas",
+ * )
+ */
 class PoolsController extends Controller
 {
+    /**
+     * @OA\Put(
+     *     path="/api/pools/create",
+     *     summary="Crea una nueva quiniela",
+     *     description="Recibe el nombre, la fecha final y los partidos de una quiniela y crea una nueva quiniela",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="name",
+     *                          type="string"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="matches",
+     *                          type="array"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="finalDate",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Quiniela guardada correctamente"
+     *     )
+     * )
+     */
     public function create(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);
@@ -92,16 +130,59 @@ class PoolsController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/pools/list",
+     *     summary="Obtiene las quinielas disponibles",
+     *     description="Obtiene el listado de todas las quinielas disponibles, es decir, cuya fecha final sea mayor a la actual",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Quinielas encontradas"
+     *     )
+     * )
+     */
     public function list(){
         $currentDate = Carbon::now()->timestamp;
         try{
             $pools = Pool::where('finaldate', '>', $currentDate)->get();
+            PoolCoinsDealer::dispatch();
             return ResponseGenerator::generateResponse("OK", 200, $pools, ["Quinielas encontradas"]);
         }catch(\Exception $e){
             return ResponseGenerator::generateResponse("KO", 304, $e, ["Error al buscar"]);
         }    
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/pools/participateInPool",
+     *     summary="Participación en una quiniela",
+     *     description="Recibe la id de la quiniela en la que participa, las monedas y los resultados para esta quiniela y crea una participación y recibe una notificación el usuario en cuestión",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="poolId",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="coins",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="poolResults",
+     *                          type="array"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Participación creada"
+     *     )
+     * )
+     */
     public function participateInPool(Request $request){
         $json = $request->getContent();
 
@@ -185,6 +266,33 @@ class PoolsController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/pools/finishPool",
+     *     summary="Finalizar una quiniela",
+     *     description="Recibe la id de la quiniela a finalizar y los resultados, actualiza todas las tablas y por último, envía notificación a todos los usuario que hayan participado y les suma o no las monedas según sus aciertos.",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="poolId",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="poolResults",
+     *                          type="array"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Participación creada"
+     *     )
+     * )
+     */
     public function finishPool(Request $request){
         $json = $request->getContent();
         $data = json_decode($json);

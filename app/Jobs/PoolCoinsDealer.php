@@ -37,7 +37,6 @@ class PoolCoinsDealer implements ShouldQueue
      */
     public function handle()
     {
-        
         $current_time = Carbon::now()->timestamp;
 
         $users = User::all();

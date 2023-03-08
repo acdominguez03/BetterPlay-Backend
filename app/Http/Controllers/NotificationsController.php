@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Notification;
 use App\Http\Helpers\ResponseGenerator;
 
+/**
+ * @OA\Info(
+ *      version="1.0.0", 
+ *      title="Controlador de Notificaciones",
+ *      description="Aquí está alojada toda la lógica de las notificaciones",
+ * )
+ */
+
 class NotificationsController extends Controller
 {
     /**

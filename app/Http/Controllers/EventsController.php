@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\CoinsDealer;
 
+// use Carbon\Carbon;
+// use App\Models\User;
+
+/**
+ * @OA\Info(
+ *      version="1.0.0", 
+ *      title="Controlador de Eventos",
+ *      description="Aquí está alojada toda la lógica de los eventos",
+ * )
+ */
 class EventsController extends Controller
 {
     /**

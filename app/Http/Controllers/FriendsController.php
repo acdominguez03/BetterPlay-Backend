@@ -9,6 +9,13 @@ use App\Models\User;
 use App\Models\Friend;
 use App\Http\Helpers\ResponseGenerator;
 
+/**
+ * @OA\Info(
+ *      version="1.0.0", 
+ *      title="Controlador de Peticiones de Amistad",
+ *      description="Aquí está alojada toda la lógica de los amigos",
+ * )
+ */
 class FriendsController extends Controller
 {
     /**
