@@ -7,19 +7,13 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Notification;
 use App\Http\Helpers\ResponseGenerator;
 
-/**
- * @OA\Info(
- *      version="1.0.0", 
- *      title="Controlador de Notificaciones",
- *      description="Aquí está alojada toda la lógica de las notificaciones",
- * )
- */
 
 class NotificationsController extends Controller
 {
     /**
      * @OA\Get(
      *     path="/api/notifications/getNotificationsByUser",
+     *     tags={"notifications"},
      *     summary="Obtiene las notificaciones del usuario",
      *     description="Devuelve todas las notificaciones del usuario logeado",
      *     @OA\Response(
@@ -41,6 +35,7 @@ class NotificationsController extends Controller
     /**
      * @OA\Put(
      *     path="/api/notifications/create",
+     *     tags={"notifications"},
      *     summary="Crea una notificación",
      *     description="Recibe un nombre de la notificción y el tipo y la crea",
      *     @OA\RequestBody(

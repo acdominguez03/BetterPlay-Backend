@@ -1,13 +1,16 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Controlador de Usuarios",
-        "description": "Aquí está alojada toda la lógica de los usuarios",
+        "title": "BetterPlay API",
+        "description": "Aquí podrás ver todas las funciones de la API detalladamente",
         "version": "1.0.0"
     },
     "paths": {
         "/api/events/create": {
             "put": {
+                "tags": [
+                    "events"
+                ],
                 "summary": "Crea un Evento",
                 "description": "Recibe home_id, away_id, home_odd, away_odd, tie_odd, date, finalDate y crea evento",
                 "operationId": "f0e8b6a154986ce59fc18586b3f0f899",
@@ -52,6 +55,9 @@
         },
         "/api/events/list": {
             "get": {
+                "tags": [
+                    "events"
+                ],
                 "summary": "Devuelve todos los eventos creados",
                 "description": "Devuelve una lista con todos los eventos de la aplicación",
                 "operationId": "005f0bd95688867e7daa3be686bf7f72",
@@ -64,6 +70,9 @@
         },
         "/api/events/getEventById": {
             "get": {
+                "tags": [
+                    "events"
+                ],
                 "summary": "Obtiene y devuelve un evento concreto",
                 "description": "Recibe la id de un evento, lo busca y lo devuelve",
                 "operationId": "66794e7eeb5abf9d9b42c3c4bb21edbd",
@@ -90,6 +99,9 @@
         },
         "/api/events/participateInBet": {
             "post": {
+                "tags": [
+                    "events"
+                ],
                 "summary": "El Usuario participa en una apuesta",
                 "description": "Recibe la id de un evento, la cantidad de monedas apostada y el equipo elegido y realiza la apuesta",
                 "operationId": "e1ed8f3120132856235a2efdb0c2d97c",
@@ -120,8 +132,46 @@
                 }
             }
         },
+        "/api/events/finishEvent": {
+            "post": {
+                "tags": [
+                    "events"
+                ],
+                "summary": "Finalización de un evento",
+                "description": "Recibe un array de json que contienen la id del evento, el resultado local y el visitante",
+                "operationId": "34cc79faef19a8d073f2a86162cfc8a9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "eventId": {
+                                        "type": "integer"
+                                    },
+                                    "home_result": {
+                                        "type": "integer"
+                                    },
+                                    "away_result": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evento Encontrado Correctamente"
+                    }
+                }
+            }
+        },
         "/api/friends/friendRequest": {
             "put": {
+                "tags": [
+                    "friends"
+                ],
                 "summary": "Crea una petición de amistad",
                 "description": "Recibe la id de otro user y le manda una petición de amistad",
                 "operationId": "21990fbabe7cec6efb6ef364f2f3376b",
@@ -148,6 +198,9 @@
         },
         "/api/notifications/getNotificationsByUser": {
             "get": {
+                "tags": [
+                    "notifications"
+                ],
                 "summary": "Obtiene las notificaciones del usuario",
                 "description": "Devuelve todas las notificaciones del usuario logeado",
                 "operationId": "2538bbc2b9f32dedda2be39131346e33",
@@ -160,6 +213,9 @@
         },
         "/api/notifications/create": {
             "put": {
+                "tags": [
+                    "notifications"
+                ],
                 "summary": "Crea una notificación",
                 "description": "Recibe un nombre de la notificción y el tipo y la crea",
                 "operationId": "88999a952fc8e8755ebce2329e0ac0a9",
@@ -187,8 +243,128 @@
                 }
             }
         },
+        "/api/pools/create": {
+            "put": {
+                "tags": [
+                    "pools"
+                ],
+                "summary": "Crea una nueva quiniela",
+                "description": "Recibe el nombre, la fecha final y los partidos de una quiniela y crea una nueva quiniela",
+                "operationId": "e06c3fce3a3a159d2bc8da7fbe79aa80",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "matches": {
+                                        "type": "string"
+                                    },
+                                    "finalDate": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Quiniela guardada correctamente"
+                    }
+                }
+            }
+        },
+        "/api/pools/list": {
+            "get": {
+                "tags": [
+                    "pools"
+                ],
+                "summary": "Obtiene las quinielas disponibles",
+                "description": "Obtiene el listado de todas las quinielas disponibles, es decir, cuya fecha final sea mayor a la actual",
+                "operationId": "248305b1d044fc02f11581840162d652",
+                "responses": {
+                    "200": {
+                        "description": "Quinielas encontradas"
+                    }
+                }
+            }
+        },
+        "/api/pools/participateInPool": {
+            "post": {
+                "tags": [
+                    "pools"
+                ],
+                "summary": "Participación en una quiniela",
+                "description": "Recibe la id de la quiniela en la que participa, las monedas y los resultados para esta quiniela y crea una participación y recibe una notificación el usuario en cuestión",
+                "operationId": "ca10f7fabd28b9960840fd9fc607e953",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "poolId": {
+                                        "type": "integer"
+                                    },
+                                    "coins": {
+                                        "type": "integer"
+                                    },
+                                    "poolResults": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Participación creada"
+                    }
+                }
+            }
+        },
+        "/api/pools/finishPool": {
+            "post": {
+                "tags": [
+                    "pools"
+                ],
+                "summary": "Finalizar una quiniela",
+                "description": "Recibe la id de la quiniela a finalizar y los resultados, actualiza todas las tablas y por último, envía notificación a todos los usuario que hayan participado y les suma o no las monedas según sus aciertos.",
+                "operationId": "e09a00a07796edfde1edcc08f73cae6b",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "poolId": {
+                                        "type": "integer"
+                                    },
+                                    "poolResults": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Participación creada"
+                    }
+                }
+            }
+        },
         "/api/users/login": {
             "post": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Logea un Usuario",
                 "description": "Recibe el nombre y la contraseña de un usuario, y le asigna un token",
                 "operationId": "079e21e1527db84e7c0d64a497665796",
@@ -221,6 +397,9 @@
         },
         "/api/users/register": {
             "put": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Registra un Usuario",
                 "description": "Recibe el nombre, el correo y la contraseña y añade un usuario a la tabla de usuarios",
                 "operationId": "a9322fc4fac0a2eecd6697724458d128",
@@ -256,6 +435,9 @@
         },
         "/api/users/sendEmail": {
             "post": {
+                "tags": [
+                    "users"
+                ],
                 "operationId": "a1331d684210a8fdc0cd08a58f3fa6c2",
                 "requestBody": {
                     "content": {
@@ -283,6 +465,9 @@
         },
         "/api/users/checkCorrectSecretCode": {
             "post": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Comprueba el código secreto",
                 "description": "Recibe el código secreto",
                 "operationId": "de4f167c935a523e4e2153f19d0d7477",
@@ -312,6 +497,9 @@
         },
         "/api/users/changePassword": {
             "post": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Cambia la contraseña",
                 "description": "Recibe la nueva contrseña y la actualiza en el usuario",
                 "operationId": "67839553c2ea54ccc41cce91865393e9",
@@ -341,6 +529,9 @@
         },
         "/api/users/edit": {
             "post": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Actualiza los datos del usuario",
                 "description": "Recibe un nombre de usuario, una contraseña y una foto y actualiza los datos del usuario",
                 "operationId": "76a7a4618cd763f49906a110fd50c225",
@@ -373,6 +564,9 @@
         },
         "/api/users/updateStreak": {
             "post": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Actualiza la racha de inicio de sesión",
                 "description": "Recibe la fecha de logeo del usuario y comprueba los dias que han pasado desde la última vez que se conectó a la app y le asigna las monedas correspondientes",
                 "operationId": "7d97161dcf97c66e11974f8d685c4a35",
@@ -399,6 +593,9 @@
         },
         "/api/users/getUserById": {
             "get": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Busca a un usuario concreto",
                 "description": "Obtiene una id de un usuario y lo busca en la tabla de usuarios ",
                 "operationId": "07a308c7bf953eb3812b792ca8a02a64",
@@ -425,6 +622,9 @@
         },
         "/api/users/list": {
             "get": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Devuelve todos los usuarios registrados",
                 "description": "Devuelve una lista con todos los usuarios de la aplicación",
                 "operationId": "88348f825c0045a166841d88de6a925b",
@@ -437,6 +637,9 @@
         },
         "/api/users/getUserData": {
             "get": {
+                "tags": [
+                    "users"
+                ],
                 "summary": "Devuelve todos los datos del usuario",
                 "description": "Devuelve ulos datos de un usuario junto con las apuestas que ha realizado",
                 "operationId": "030226762bfb2f589a1ac3b2c70c020f",

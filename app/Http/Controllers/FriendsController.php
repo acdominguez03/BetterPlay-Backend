@@ -9,18 +9,13 @@ use App\Models\User;
 use App\Models\Friend;
 use App\Http\Helpers\ResponseGenerator;
 
-/**
- * @OA\Info(
- *      version="1.0.0", 
- *      title="Controlador de Peticiones de Amistad",
- *      description="Aquí está alojada toda la lógica de los amigos",
- * )
- */
+
 class FriendsController extends Controller
 {
     /**
      * @OA\Put(
      *     path="/api/friends/friendRequest",
+     *     tags={"friends"},
      *     summary="Crea una petición de amistad",
      *     description="Recibe la id de otro user y le manda una petición de amistad",
      *     @OA\RequestBody(

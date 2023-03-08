@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @OA\Info(
  *      version="1.0.0", 
- *      title="Controlador de Usuarios",
- *      description="Aquí está alojada toda la lógica de los usuarios",
+ *      title="BetterPlay API",
+ *      description="Aquí podrás ver todas las funciones de la API detalladamente",
  * )
  */
 class UsersController extends Controller
@@ -27,6 +27,7 @@ class UsersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/users/login",
+     *     tags={"users"},
      *     summary="Logea un Usuario",
      *     description="Recibe el nombre y la contraseña de un usuario, y le asigna un token",
      *     @OA\RequestBody(
@@ -101,6 +102,7 @@ class UsersController extends Controller
     /**
      * @OA\Put(
      *     path="/api/users/register",
+     *     tags={"users"},
      *     summary="Registra un Usuario",
      *     description="Recibe el nombre, el correo y la contraseña y añade un usuario a la tabla de usuarios",
      *     @OA\RequestBody(
@@ -184,6 +186,7 @@ class UsersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/users/sendEmail",
+     *     tags={"users"},
      *     @OA\RequestBody(
      *          @OA\MediaType(
      *              mediaType="application/json",
@@ -235,6 +238,7 @@ class UsersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/users/checkCorrectSecretCode",
+     *     tags={"users"},
      *     summary="Comprueba el código secreto",
      *     description="Recibe el código secreto",
      *     @OA\RequestBody(
@@ -306,6 +310,7 @@ class UsersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/users/changePassword",
+     *     tags={"users"},
      *     summary="Cambia la contraseña",
      *     description="Recibe la nueva contrseña y la actualiza en el usuario",
      *     @OA\RequestBody(
@@ -372,6 +377,7 @@ class UsersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/users/edit",
+     *     tags={"users"},
      *     summary="Actualiza los datos del usuario",
      *     description="Recibe un nombre de usuario, una contraseña y una foto y actualiza los datos del usuario",
      *     @OA\RequestBody(
@@ -447,6 +453,7 @@ class UsersController extends Controller
     /**
      * @OA\Post(
      *     path="/api/users/updateStreak",
+     *     tags={"users"},
      *     summary="Actualiza la racha de inicio de sesión",
      *     description="Recibe la fecha de logeo del usuario y comprueba los dias que han pasado desde la última vez que se conectó a la app y le asigna las monedas correspondientes",
      *     @OA\RequestBody(
@@ -574,6 +581,7 @@ class UsersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/users/getUserById",
+     *     tags={"users"},
      *     summary="Busca a un usuario concreto",
      *     description="Obtiene una id de un usuario y lo busca en la tabla de usuarios ",
      *     @OA\RequestBody(
@@ -628,6 +636,7 @@ class UsersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/users/list",
+     *     tags={"users"},
      *     summary="Devuelve todos los usuarios registrados",
      *     description="Devuelve una lista con todos los usuarios de la aplicación",
      *     @OA\Response(
@@ -648,6 +657,7 @@ class UsersController extends Controller
     /**
      * @OA\Get(
      *     path="/api/users/getUserData",
+     *     tags={"users"},
      *     summary="Devuelve todos los datos del usuario",
      *     description="Devuelve ulos datos de un usuario junto con las apuestas que ha realizado",
      *     @OA\Response(

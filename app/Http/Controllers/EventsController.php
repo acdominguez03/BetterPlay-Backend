@@ -12,21 +12,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\CoinsDealer;
 
-// use Carbon\Carbon;
-// use App\Models\User;
 
-/**
- * @OA\Info(
- *      version="1.0.0", 
- *      title="Controlador de Eventos",
- *      description="Aquí está alojada toda la lógica de los eventos",
- * )
- */
 class EventsController extends Controller
 {
     /**
      * @OA\Put(
      *     path="/api/events/create",
+     *     tags={"events"},
      *     summary="Crea un Evento",
      *     description="Recibe home_id, away_id, home_odd, away_odd, tie_odd, date, finalDate y crea evento",
      *     @OA\RequestBody(
@@ -133,6 +125,7 @@ class EventsController extends Controller
     /**
      * @OA\Get(
      *     path="/api/events/list",
+     *     tags={"events"},
      *     summary="Devuelve todos los eventos creados",
      *     description="Devuelve una lista con todos los eventos de la aplicación",
      *     @OA\Response(
@@ -154,6 +147,7 @@ class EventsController extends Controller
     /**
      * @OA\Get(
      *     path="/api/events/getEventById",
+     *     tags={"events"},
      *     summary="Obtiene y devuelve un evento concreto",
      *     description="Recibe la id de un evento, lo busca y lo devuelve",
      *     @OA\RequestBody(
@@ -206,6 +200,7 @@ class EventsController extends Controller
     /**
      * @OA\Post(
      *     path="/api/events/participateInBet",
+     *     tags={"events"},
      *     summary="El Usuario participa en una apuesta",
      *     description="Recibe la id de un evento, la cantidad de monedas apostada y el equipo elegido y realiza la apuesta",
      *     @OA\RequestBody(
@@ -316,6 +311,38 @@ class EventsController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/events/finishEvent",
+     *     tags={"events"},
+     *     summary="Finalización de un evento",
+     *     description="Recibe un array de json que contienen la id del evento, el resultado local y el visitante",
+     *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="eventId",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="home_result",
+     *                          type="integer"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="away_result",
+     *                          type="integer"
+     *                      ),
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Evento Encontrado Correctamente"
+     *     ),
+     * )
+     */
     public function finishEvent(Request $request){
         $json = $request->getContent();
 
