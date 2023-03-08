@@ -15,6 +15,8 @@ use App\Http\Helpers\ResponseGenerator;
 use App\Models\PoolParticipation;
 use App\Models\User;
 use App\Models\PoolEvent;
+use App\Models\SpecialPoolEvent;
+use App\Models\Notification;
 
 class PoolCoinsDealer implements ShouldQueue
 {
